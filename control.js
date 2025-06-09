@@ -1,59 +1,45 @@
-// control.js
+// bot.js
 const mineflayer = require('mineflayer');
-const pathfinder = require('mineflayer-pathfinder').pathfinder;
-const { GoalFollow } = require('mineflayer-pathfinder').goals;
 
-const bot = mineflayer.createBot({
+const options = {
   host: 'RealMadrid007.aternos.me',
   port: 55896,
-  username: 'nooboobsbot',    // Use your offline mode username here
+  username: 'ZORbot',  // simple username, no special chars
   version: '1.21.4',
-  auth: 'offline',
-});
+  auth: 'offline',     // offline mode auth for cracked servers
+};
 
-bot.loadPlugin(pathfinder);
+let bot;
 
-bot.once('spawn', () => {
-  console.log('✅ Control bot connected!');
+function createBot() {
+  console.log('Starting bot...');
+  bot = mineflayer.createBot(options);
 
-  bot.pathfinder.setGoal(null);
+  bot.on('login', () => {
+    console.log(`Logged in as ${bot.username}`);
+  });
 
-  // Door toggling to keep connection alive (optional)
-  setInterval(() => {
-    const door = bot.findBlock({
-      matching: block => block.name.includes('door'),
-      maxDistance: 6,
-    });
+  bot.on('spawn', () => {
+    console.log('Bot spawned in the world!');
+  });
 
-    if (door) {
-      bot.activateBlock(door);
-      console.log('🚪 Door toggled at', door.position.toString());
+  bot.on('chat', (username, message) => {
+    if (username === bot.username) return;
+    console.log(`<${username}> ${message}`);
+
+    if (message === 'hi') {
+      bot.chat(`Hello ${username}!`);
     }
-  }, 10000);
-});
+  });
 
-// Listen for chat commands
-bot.on('chat', (username, message) => {
-  if (username === bot.username) return; // ignore own messages
+  bot.on('error', (err) => {
+    console.error('Bot error:', err);
+  });
 
-  if (message === 'come') {
-    const player = bot.players[username];
-    if (player && player.entity) {
-      bot.pathfinder.setGoal(new GoalFollow(player.entity, 1), true);
-      bot.chat(`Coming to you, ${username}!`);
-    } else {
-      bot.chat(`I can't see you, ${username}!`);
-    }
-  }
+  bot.on('end', () => {
+    console.log('Bot disconnected, reconnecting in 5 seconds...');
+    setTimeout(createBot, 5000);
+  });
+}
 
-  if (message === 'stop') {
-    bot.pathfinder.setGoal(null);
-    bot.chat('Stopping movement.');
-  }
-});
-
-bot.on('error', err => console.log('❌ Control bot error:', err));
-bot.on('end', () => {
-  console.log('🔁 Control bot disconnected, restarting...');
-  setTimeout(() => process.exit(0), 5000);
-});
+createBot();
