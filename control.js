@@ -6,7 +6,7 @@ const { GoalFollow } = require('mineflayer-pathfinder').goals;
 const bot = mineflayer.createBot({
   host: 'RealMadrid007.aternos.me',
   port: 55896,
-  username: 'ZOR123',    // Use your offline mode username here
+  username: 'nooboobsbot',    // Use your offline mode username here
   version: '1.21.4',
   auth: 'offline',
 });
