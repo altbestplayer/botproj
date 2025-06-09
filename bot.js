@@ -3,7 +3,7 @@ const mineflayer = require('mineflayer');
 const bot = mineflayer.createBot({
   host: 'RealMadrid007.aternos.me',
   port: 55896,
-  username: '_Z_O_R_',       // Updated username
+  username: '_Z_O_R',       // Updated username
   version: '1.21.4',
   auth: 'offline'            // Change to 'microsoft' if premium
 });
